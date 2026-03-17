@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEMSIRA - Daftar Guru</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <i class="fas fa-user-plus"></i>
+                <h2>Daftar Guru Baru</h2>
+                <p>Isi maklumat untuk mula guna SEMSIRA</p>
+            </div>
+            
+            <form id="guru-signup-form" onsubmit="handleGuruSignup(event)">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Nama Penuh</label>
+                    <input type="text" id="fullname" placeholder="Cth: Ahmad Bin Ali" required>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="email" placeholder="ahmad@guru.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-phone"></i> No. Telefon</label>
+                    <input type="tel" id="phone" placeholder="012-3456789">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-school"></i> Sekolah/Institusi</label>
+                    <input type="text" id="school" placeholder="Cth: SMK Taman Desa">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Kata Laluan</label>
+                    <input type="password" id="password" placeholder="Min 6 karakter" required>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Sahkan Kata Laluan</label>
+                    <input type="password" id="confirm-password" placeholder="Taip semula" required>
+                </div>
+                
+                <div class="form-group terms">
+                    <label class="checkbox">
+                        <input type="checkbox" required> Saya setuju dengan <a href="#">Terma & Syarat</a>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-user-check"></i> Daftar
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Sudah ada akaun? <a href="login-guru.html">Login di sini</a></p>
+                <p><a href="index.html"><i class="fas fa-arrow-left"></i> Kembali ke utama</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

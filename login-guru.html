@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>SEMSIRA - Log Masuk Guru</title>
+    <title>Log Masuk Guru - SEMSIRA</title>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
+        /* SAME CSS as signup-guru.html */
         * {
             margin: 0;
             padding: 0;
@@ -85,7 +86,7 @@
         /* Auth Container */
         .auth-container {
             width: 100%;
-            max-width: 450px;
+            max-width: 500px;
             animation: slideUp 0.6s ease-out;
         }
 
@@ -218,23 +219,6 @@
             color: var(--primary);
         }
 
-        /* Email Valid Indicator */
-        .email-valid-indicator {
-            position: absolute;
-            right: 45px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.2rem;
-        }
-
-        .valid-email {
-            color: var(--success);
-        }
-
-        .invalid-email {
-            color: var(--danger);
-        }
-
         /* Form Options */
         .form-options {
             display: flex;
@@ -263,7 +247,6 @@
             color: var(--primary);
             text-decoration: none;
             font-size: 0.9rem;
-            transition: all 0.3s;
             background: none;
             border: none;
             cursor: pointer;
@@ -301,16 +284,12 @@
             box-shadow: 0 20px 40px rgba(65, 88, 240, 0.6);
         }
 
-        .btn-primary:active:not(:disabled) {
-            transform: translateY(0);
-        }
-
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
         }
 
-        /* Alert Messages */
+        /* Alert */
         .alert {
             padding: 15px;
             border-radius: 15px;
@@ -447,10 +426,9 @@
                         <input 
                             type="email" 
                             id="email" 
-                            placeholder="nama@guru.com"
+                            placeholder="nama@email.com"
                             required
                         >
-                        <span id="emailIndicator" class="email-valid-indicator"></span>
                     </div>
                 </div>
 
@@ -497,16 +475,42 @@
                 <p>Belum mempunyai akaun?</p>
                 <a href="signup-guru.html">
                     <i class="fas fa-user-plus"></i>
-                    Daftar sebagai Guru Baru
+                    Daftar Akaun Baru
                 </a>
             </div>
         </div>
     </div>
 
     <script>
-        // ===== DATABASE FUNCTIONS =====
+        // ===== DATABASE LOGIN - GUNA KEY YANG SAMA DENGAN SIGNUP =====
+        const STORAGE_KEYS = {
+            GURU: 'semsira_gurus',           // SAMA dengan signup-guru.html
+            CURRENT_USER: 'semsira_current_user'
+        };
+
+        // ===== GURU FUNCTIONS =====
         function getGuruDatabase() {
-            return JSON.parse(localStorage.getItem('semsira_gurus')) || [];
+            const data = localStorage.getItem(STORAGE_KEYS.GURU);
+            return data ? JSON.parse(data) : [];
+        }
+
+        function getGuruByEmail(email) {
+            const gurus = getGuruDatabase();
+            return gurus.find(guru => guru.email.toLowerCase() === email.toLowerCase());
+        }
+
+        function validateLogin(email, password) {
+            const guru = getGuruByEmail(email);
+            
+            if (!guru) {
+                return { valid: false, reason: 'Email tidak berdaftar' };
+            }
+            
+            if (guru.password !== password) {
+                return { valid: false, reason: 'Kata laluan salah' };
+            }
+            
+            return { valid: true, guru };
         }
 
         // ===== PASSWORD TOGGLE =====
@@ -520,59 +524,6 @@
             } else {
                 passwordInput.type = 'password';
                 toggleIcon.className = 'fas fa-eye';
-            }
-        }
-
-        // ===== VALIDATE EMAIL FORMAT =====
-        function validateEmailFormat(email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
-        }
-
-        // ===== CHECK DOMAIN EXISTS (guna API) =====
-        async function checkDomainExists(domain) {
-            // Domain yang pasti wujud
-            const validDomains = [
-                'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com',
-                'semsira.edu.my', 'edu.my', 'google.com', 'semsira.com',
-                'guru.com', 'school.edu', 'edu.my', 'moe.edu.my'
-            ];
-            
-            return validDomains.includes(domain.toLowerCase());
-        }
-
-        // ===== VALIDATE EMAIL REAL-TIME =====
-        async function validateEmail(email) {
-            const indicator = document.getElementById('emailIndicator');
-            
-            if (!email) {
-                indicator.innerHTML = '';
-                return false;
-            }
-
-            // Check format
-            if (!validateEmailFormat(email)) {
-                indicator.innerHTML = '<i class="fas fa-times-circle invalid-email"></i>';
-                return false;
-            }
-
-            // Check domain
-            try {
-                indicator.innerHTML = '<div class="spinner" style="width: 15px; height: 15px;"></div>';
-                
-                const domain = email.split('@')[1];
-                const isValid = await checkDomainExists(domain);
-                
-                if (isValid) {
-                    indicator.innerHTML = '<i class="fas fa-check-circle valid-email"></i>';
-                    return true;
-                } else {
-                    indicator.innerHTML = '<i class="fas fa-exclamation-circle invalid-email"></i>';
-                    return false;
-                }
-            } catch (error) {
-                indicator.innerHTML = '<i class="fas fa-check-circle valid-email"></i>';
-                return true;
             }
         }
 
@@ -599,10 +550,10 @@
         }
 
         // ===== HANDLE LOGIN =====
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const rememberMe = document.getElementById('rememberMe').checked;
             const loginBtn = document.getElementById('loginBtn');
@@ -612,28 +563,11 @@
             loginBtn.innerHTML = '<div class="spinner"></div> Memproses...';
             
             try {
-                // Validate email
-                const isValidEmail = await validateEmail(email);
-                if (!isValidEmail) {
-                    showAlert('Alamat email tidak sah', 'danger');
-                    loginBtn.disabled = false;
-                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Log Masuk';
-                    return;
-                }
+                // Validate login
+                const result = validateLogin(email, password);
                 
-                // Check in database
-                const gurus = getGuruDatabase();
-                const guru = gurus.find(g => g.email === email);
-                
-                if (!guru) {
-                    showAlert('Email tidak berdaftar. Sila daftar akaun baru.', 'warning');
-                    loginBtn.disabled = false;
-                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Log Masuk';
-                    return;
-                }
-                
-                if (guru.password !== password) {
-                    showAlert('Kata laluan salah. Sila cuba lagi.', 'danger');
+                if (!result.valid) {
+                    showAlert(result.reason, 'danger');
                     loginBtn.disabled = false;
                     loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Log Masuk';
                     return;
@@ -644,16 +578,24 @@
                 
                 // Save session
                 const userData = {
-                    id: guru.id,
-                    name: guru.name,
-                    email: guru.email,
+                    id: result.guru.id,
+                    name: result.guru.name,
+                    email: result.guru.email,
                     role: 'guru'
                 };
                 
                 if (rememberMe) {
-                    localStorage.setItem('semsira_current_user', JSON.stringify(userData));
+                    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(userData));
                 } else {
-                    sessionStorage.setItem('semsira_current_user', JSON.stringify(userData));
+                    sessionStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(userData));
+                }
+                
+                // Update last login (optional)
+                const gurus = getGuruDatabase();
+                const guruIndex = gurus.findIndex(g => g.id === result.guru.id);
+                if (guruIndex !== -1) {
+                    gurus[guruIndex].lastLogin = new Date().toISOString();
+                    localStorage.setItem(STORAGE_KEYS.GURU, JSON.stringify(gurus));
                 }
                 
                 // Redirect to dashboard
@@ -672,7 +614,7 @@
 
         // ===== FORGOT PASSWORD =====
         function handleForgotPassword() {
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             
             if (!email) {
                 showAlert('Sila masukkan email anda', 'warning');
@@ -680,16 +622,10 @@
                 return;
             }
             
-            if (!validateEmailFormat(email)) {
-                showAlert('Format email tidak sah', 'danger');
-                return;
-            }
-            
-            const gurus = getGuruDatabase();
-            const guru = gurus.find(g => g.email === email);
+            const guru = getGuruByEmail(email);
             
             if (guru) {
-                showAlert('Sila hubungi host untuk reset kata laluan: hostsemsira@gmail.com', 'info');
+                showAlert('Sila hubungi admin untuk reset kata laluan', 'info');
             } else {
                 showAlert('Email tidak berdaftar dalam sistem', 'danger');
             }
@@ -697,7 +633,7 @@
 
         // ===== CHECK SESSION =====
         function checkExistingSession() {
-            const currentUser = localStorage.getItem('semsira_current_user') || sessionStorage.getItem('semsira_current_user');
+            const currentUser = localStorage.getItem(STORAGE_KEYS.CURRENT_USER) || sessionStorage.getItem(STORAGE_KEYS.CURRENT_USER);
             
             if (currentUser) {
                 const user = JSON.parse(currentUser);
@@ -707,14 +643,21 @@
             }
         }
 
+        // ===== DEBUG FUNCTION =====
+        function debugGuruData() {
+            const gurus = getGuruDatabase();
+            console.log('=== SEMUA GURU DALAM DATABASE ===');
+            console.log('Jumlah:', gurus.length);
+            console.log('Data:', gurus);
+            return gurus;
+        }
+
         // ===== INIT =====
         document.addEventListener('DOMContentLoaded', function() {
             checkExistingSession();
             
-            // Email validation on input
-            document.getElementById('email').addEventListener('input', function() {
-                validateEmail(this.value);
-            });
+            // Debug: tengok data dalam console
+            console.log('Database sedia ada:', getGuruDatabase().length, 'guru');
         });
     </script>
 </body>

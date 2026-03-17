@@ -2,114 +2,964 @@
 <html lang="ms">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEMSIRA - Sistem Kehadiran Pintar</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>SEMSIRA - Sistem Kehadiran Wajah Pintar Malaysia</title>
+    
+    <!-- Font Awesome 6 (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts - Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== RESET & VARIABLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4158F0;
+            --primary-light: #6c7ff0;
+            --primary-dark: #2a3bb0;
+            --secondary: #C850C0;
+            --tertiary: #FFCC70;
+            --success: #06d6a0;
+            --warning: #FFB347;
+            --danger: #FF6B6B;
+            --dark: #1e1e2f;
+            --darker: #13131f;
+            --light: #f8f9fa;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --text-light: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #141e30 0%, #243b55 100%);
+            min-height: 100vh;
+            color: var(--text-light);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ===== BACKGROUND ANIMATION ===== */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            filter: blur(80px);
+            opacity: 0.15;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .circle1 {
+            width: 500px;
+            height: 500px;
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .circle2 {
+            width: 400px;
+            height: 400px;
+            bottom: -100px;
+            left: -100px;
+            background: linear-gradient(135deg, var(--secondary), var(--tertiary));
+            animation-delay: 5s;
+        }
+
+        .circle3 {
+            width: 300px;
+            height: 300px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, var(--tertiary), var(--primary));
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(50px, 50px) scale(1.1); }
+            50% { transform: translate(-30px, 20px) scale(0.9); }
+            75% { transform: translate(20px, -50px) scale(1.05); }
+        }
+
+        /* ===== CONTAINER ===== */
+        .landing-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* ===== HEADER / NAVBAR ===== */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(65, 88, 240, 0.4);
+            transform: rotate(-5deg);
+            transition: all 0.3s;
+        }
+
+        .logo-icon:hover {
+            transform: rotate(0deg) scale(1.1);
+        }
+
+        .logo-icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .logo-text h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .logo-text p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-btn i {
+            font-size: 1.2rem;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(65, 88, 240, 0.4);
+        }
+
+        .nav-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+            padding: 60px 0;
+            min-height: 80vh;
+        }
+
+        .hero-content {
+            animation: slideInLeft 1s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+            color: var(--text-muted);
+        }
+
+        .badge i {
+            color: var(--tertiary);
+            margin-right: 8px;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 600px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 10px 30px rgba(65, 88, 240, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(65, 88, 240, 0.6);
+        }
+
+        .btn-outline {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: var(--dark);
+            border-color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #0bb5ff);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(6, 214, 160, 0.4);
+        }
+
+        /* ===== HERO IMAGE ===== */
+        .hero-image {
+            position: relative;
+            animation: floatImage 6s infinite ease-in-out;
+        }
+
+        @keyframes floatImage {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+
+        .image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+            transition: all 0.5s;
+        }
+
+        .image-wrapper:hover img {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        .floating-card {
+            position: absolute;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: var(--shadow);
+            animation: floatCard 3s infinite ease-in-out;
+        }
+
+        .floating-card i {
+            font-size: 2rem;
+            color: var(--success);
+        }
+
+        .card1 {
+            top: 30px;
+            left: -30px;
+            animation-delay: 0s;
+        }
+
+        .card2 {
+            bottom: 30px;
+            right: -30px;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes floatCard {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(10px, -10px); }
+        }
+
+        /* ===== FEATURES SECTION ===== */
+        .features-section {
+            padding: 100px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.5s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: all 0.5s;
+            z-index: -1;
+        }
+
+        .feature-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-20px) scale(1.05);
+            border-color: var(--primary);
+        }
+
+        .feature-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            transform: rotate(45deg);
+            transition: all 0.5s;
+        }
+
+        .feature-icon i {
+            font-size: 3rem;
+            color: white;
+            transform: rotate(-45deg);
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: rotate(90deg);
+            box-shadow: 0 20px 40px rgba(65, 88, 240, 0.4);
+        }
+
+        .feature-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        /* ===== CTA SECTION ===== */
+        .cta-section {
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .cta-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 60px;
+            padding: 80px 40px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .cta-card h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .cta-card p {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            position: relative;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .cta-btn {
+            padding: 18px 50px;
+            font-size: 1.2rem;
+            background: white;
+            color: var(--primary);
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .cta-btn-outline {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+
+        .cta-btn-outline:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .social-links a {
+            width: 45px;
+            height: 45px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        /* ===== LOADING SCREEN ===== */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 1s;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 5px solid var(--glass);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== MOBILE RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .hero h1 { font-size: 3rem; }
+            .hero-image { height: 400px; }
+        }
+
+        @media (max-width: 768px) {
+            .landing-container { padding: 20px; }
+            
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo { justify-content: center; }
+            
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+                min-height: auto;
+            }
+            
+            .hero-stats { justify-content: center; }
+            .hero-buttons { justify-content: center; }
+            
+            .hero-image {
+                order: -1;
+                margin-bottom: 30px;
+            }
+            
+            .image-wrapper { height: 300px; }
+            .floating-card { display: none; }
+            
+            .section-header h2 { font-size: 2.5rem; }
+            
+            .cta-card { padding: 40px 20px; }
+            .cta-card h2 { font-size: 2rem; }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+            
+            .hero-stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .btn { width: 100%; justify-content: center; }
+            
+            .feature-card { padding: 30px 20px; }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .footer-links { justify-content: center; }
+        }
+    </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="nav-container">
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="bg-circle circle1"></div>
+        <div class="bg-circle circle2"></div>
+        <div class="bg-circle circle3"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="landing-container">
+        <!-- Header -->
+        <header>
             <div class="logo">
-                <i class="fas fa-face-smile"></i>
-                <span>SEMSIRA</span>
+                <div class="logo-icon">
+                    <i class="fas fa-face-smile"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>SEMSIRA</h1>
+                    <p>SISTEM KEHADIRAN PINTAR</p>
+                </div>
             </div>
-            <ul class="nav-menu">
-                <li><a href="index.html" class="active">Utama</a></li>
-                <li><a href="#cara-kerja">Cara Kerja</a></li>
-                <li><a href="#ciri">Ciri-ciri</a></li>
-                <li><a href="login-guru.html">Guru</a></li>
-                <li><a href="login-host.html">Host</a></li>
-            </ul>
-            <div class="nav-toggle">
-                <i class="fas fa-bars"></i>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>SEMSIRA</h1>
-            <h2>Sistem Kehadiran Wajah Pintar</h2>
-            <p>Rekod kehadiran pelajar dengan sekali imbas. Tanpa kad, tanpa kertas, tanpa hassle.</p>
-            <div class="hero-buttons">
-                <a href="login-guru.html" class="btn btn-primary">
-                    <i class="fas fa-chalkboard-teacher"></i> Saya Guru
+            
+            <div class="nav-buttons">
+                <a href="login-guru.html" class="nav-btn">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    Guru
                 </a>
-                <a href="login-host.html" class="btn btn-outline">
-                    <i class="fas fa-user-cog"></i> Saya Host
+                <a href="login-host.html" class="nav-btn">
+                    <i class="fas fa-server"></i>
+                    Host
                 </a>
-                <a href="scan.html" class="btn btn-success">
-                    <i class="fas fa-camera"></i> Scan Sekarang
+                <a href="scan.html" class="nav-btn primary">
+                    <i class="fas fa-camera"></i>
+                    Scan
                 </a>
             </div>
-        </div>
-        <div class="hero-image">
-            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%234361ee' opacity='0.2'/%3E%3Ccircle cx='100' cy='100' r='60' fill='%234361ee' opacity='0.3'/%3E%3Ccircle cx='100' cy='100' r='40' fill='%234361ee' opacity='0.4'/%3E%3C/svg%3E" alt="SEMSIRA">
-        </div>
-    </section>
+        </header>
 
-    <!-- Cara Kerja -->
-    <section id="cara-kerja" class="features">
-        <h2 class="section-title">Cara Kerja</h2>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <i class="fas fa-user-plus"></i>
-                <h3>1. Daftar</h3>
-                <p>Guru daftar kelas & pelajar. Host daftar guru.</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-camera"></i>
-                <h3>2. Scan Muka</h3>
-                <p>Pelajar scan muka setiap kali masuk kelas.</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-chart-line"></i>
-                <h3>3. Rekod Auto</h3>
-                <p>Sistem rekod masa & tarikh automatik.</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-file-alt"></i>
-                <h3>4. Laporan</h3>
-                <p>Guru & host boleh lihat laporan kehadiran.</p>
-            </div>
-        </div>
-    </section>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="badge">
+                    <i class="fas fa-shield-alt"></i>
+                    #1 Sistem Kehadiran Wajah di Malaysia
+                </div>
+                
+                <h1>
+                    Rekod Kehadiran <span>Tanpa Sentuh</span> Dengan <span>AI Wajah</span>
+                </h1>
+                
+                <p>
+                    SEMSIRA menggunakan teknologi pengecaman wajah termaju untuk merekod kehadiran pelajar dengan pantas, tepat dan selamat. Tanpa kad, tanpa cap jari, hanya wajah!
+                </p>
 
-    <!-- Ciri-ciri -->
-    <section id="ciri" class="features" style="background: #f8f9fa;">
-        <h2 class="section-title">Ciri-ciri Hebat</h2>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <i class="fas fa-face-smile"></i>
-                <h3>Face Recognition</h3>
-                <p>Guna teknologi terkini untuk cam wajah.</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-mobile-alt"></i>
-                <h3>Mobile Friendly</h3>
-                <p>Boleh guna dekat phone, tablet, laptop.</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-cloud-upload-alt"></i>
-                <h3>Simpan dalam Akaun</h3>
-                <p>Data sync ikut akaun Google awda.</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-shield-alt"></i>
-                <h3>Private & Safe</h3>
-                <p>Data dalam browser awda ja, tak hantar ke server.</p>
-            </div>
-        </div>
-    </section>
+                <!-- Stats akan diisi oleh JavaScript -->
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalGuru">0</div>
+                        <div class="stat-label">Guru Aktif</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalMurid">0</div>
+                        <div class="stat-label">Pelajar</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalSekolah">0</div>
+                        <div class="stat-label">Sekolah/Institusi</div>
+                    </div>
+                </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2026 SEMSIRA. Power by localStorage & FaceAPI.js</p>
-    </footer>
+                <div class="hero-buttons">
+                    <a href="scan.html" class="btn btn-primary">
+                        <i class="fas fa-camera"></i>
+                        Cuba Scan Sekarang
+                    </a>
+                    <a href="#features" class="btn btn-outline" onclick="smoothScroll('#features')">
+                        <i class="fas fa-play-circle"></i>
+                        Tengok Demo
+                    </a>
+                </div>
+            </div>
 
-    <script src="js/app.js"></script>
+            <div class="hero-image">
+                <div class="image-wrapper">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600' viewBox='0 0 800 600'%3E%3Crect width='800' height='600' fill='%234158F0' opacity='0.2'/%3E%3Ccircle cx='400' cy='300' r='150' fill='%23C850C0' opacity='0.3'/%3E%3Ccircle cx='400' cy='300' r='100' fill='%23FFCC70' opacity='0.3'/%3E%3Ctext x='400' y='320' font-family='Arial' font-size='48' fill='white' text-anchor='middle'%3E👤 FACE SCAN%3C/text%3E%3C/svg%3E"
+                         alt="Face Scan Illustration">
+                </div>
+                
+                <div class="floating-card card1">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <strong>Scan Berjaya!</strong>
+                        <small>Ahmad bin Ali - 5 Sains 1</small>
+                    </div>
+                </div>
+                
+                <div class="floating-card card2">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <strong>07:45:23</strong>
+                        <small>Status: Hadir</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features-section">
+            <div class="section-header">
+                <h2>Hebat, Cepat, <span style="background: linear-gradient(135deg, var(--tertiary), var(--success)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Pintar</span></h2>
+                <p>Direka khas untuk kemudahan guru, pelajar dan pentadbir sekolah</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-face-smile"></i>
+                    </div>
+                    <h3>Face Recognition</h3>
+                    <p>Teknologi AI terkini yang dapat mengecam wajah dengan tepat dalam pelbagai keadaan cahaya dan sudut.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Mobile Friendly</h3>
+                    <p>Boleh digunakan di mana-mana peranti - telefon, tablet, atau komputer. Sesuai untuk semua saiz skrin.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3>Simpan Dalam Akaun</h3>
+                    <p>Data disimpan dalam akaun Google anda. Log masuk di mana-mana peranti, data akan sync automatik!</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Laporan Automatik</h3>
+                    <p>Hasilkan laporan kehadiran harian, bulanan atau tahunan dengan satu klik. Boleh export ke PDF/Excel!</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Privasi Terjamin</h3>
+                    <p>Data wajah disimpan dalam bentuk kod matematik, bukan gambar. Tak boleh didekod semula oleh sesiapa.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Scan Pantas</h3>
+                    <p>Hanya 1 saat untuk scan dan rekod kehadiran. Tak perlu tunggu lama-lama!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-card">
+                <h2>Sedia untuk transformasi digital?</h2>
+                <p>Mulakan dengan SEMSIRA hari ini</p>
+                
+                <div class="cta-buttons">
+                    <a href="signup-guru.html" class="cta-btn">
+                        <i class="fas fa-user-plus"></i>
+                        Daftar Sebagai Guru
+                    </a>
+                    <a href="login-host.html" class="cta-btn cta-btn-outline">
+                        <i class="fas fa-server"></i>
+                        Log Masuk Host
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#"><i class="fas fa-info-circle"></i> Tentang Kami</a>
+                    <a href="#"><i class="fas fa-file-contract"></i> Terma</a>
+                    <a href="#"><i class="fas fa-shield-alt"></i> Privasi</a>
+                    <a href="#"><i class="fas fa-envelope"></i> Hubungi</a>
+                </div>
+                
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 0.9rem;">
+                <p>© 2026 SEMSIRA. Hak Cipta Terpelihara. <i class="fas fa-heart" style="color: var(--danger);"></i> Powered by FaceAPI & localStorage</p>
+                <p style="margin-top: 10px;"><i class="fas fa-database"></i> Data disimpan dalam akaun Google anda - selamat dan peribadi!</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="js/database.js"></script>
+    <script src="js/index.js"></script>
 </body>
 </html>

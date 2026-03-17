@@ -2,54 +2,720 @@
 <html lang="ms">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEMSIRA - Login Guru</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>SEMSIRA - Log Masuk Guru</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary: #4158F0;
+            --primary-dark: #2a3bb0;
+            --secondary: #C850C0;
+            --success: #06d6a0;
+            --danger: #FF6B6B;
+            --warning: #FFB347;
+            --dark: #1e1e2f;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #141e30, #243b55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background Animation */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            filter: blur(80px);
+            opacity: 0.15;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .circle1 {
+            width: 500px;
+            height: 500px;
+            top: -100px;
+            right: -100px;
+        }
+
+        .circle2 {
+            width: 400px;
+            height: 400px;
+            bottom: -100px;
+            left: -100px;
+            background: linear-gradient(135deg, var(--secondary), #FFCC70);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(50px, 50px); }
+        }
+
+        /* Auth Container */
+        .auth-container {
+            width: 100%;
+            max-width: 450px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            opacity: 0.8;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            opacity: 1;
+            transform: translateX(-5px);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header i {
+            font-size: 3rem;
+            color: var(--primary);
+            background: rgba(65, 88, 240, 0.2);
+            padding: 20px;
+            border-radius: 30px;
+            margin-bottom: 20px;
+        }
+
+        .auth-header h2 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .auth-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: white;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .form-group label i {
+            margin-right: 8px;
+            color: var(--primary);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper > i:first-child {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 3px rgba(65, 88, 240, 0.2);
+        }
+
+        .input-wrapper input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-password:hover {
+            color: var(--primary);
+        }
+
+        /* Email Valid Indicator */
+        .email-valid-indicator {
+            position: absolute;
+            right: 45px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+        }
+
+        .valid-email {
+            color: var(--success);
+        }
+
+        .invalid-email {
+            color: var(--danger);
+        }
+
+        /* Form Options */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .forgot-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .forgot-link:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+
+        /* Button */
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 10px 30px rgba(65, 88, 240, 0.4);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(65, 88, 240, 0.6);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: rgba(6, 214, 160, 0.2);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-danger {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .alert-warning {
+            background: rgba(255, 179, 71, 0.2);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+        }
+
+        .alert-info {
+            background: rgba(65, 88, 240, 0.2);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s infinite linear;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Auth Footer */
+        .auth-footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .auth-footer a:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 30px 20px;
+            }
+
+            .auth-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .form-options {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+    </style>
 </head>
-<body class="auth-page">
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="bg-circle circle1"></div>
+        <div class="bg-circle circle2"></div>
+    </div>
+
+    <!-- Main Container -->
     <div class="auth-container">
         <div class="auth-card">
+            <!-- Back Button -->
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Kembali ke Utama
+            </a>
+
+            <!-- Header -->
             <div class="auth-header">
                 <i class="fas fa-chalkboard-teacher"></i>
-                <h2>Login Guru</h2>
-                <p>Masuk untuk urus kelas & pelajar</p>
+                <h2>Log Masuk Guru</h2>
+                <p>Masukkan email dan kata laluan yang didaftarkan</p>
             </div>
-            
-            <form id="guru-login-form" onsubmit="handleGuruLogin(event)">
+
+            <!-- Alert Container -->
+            <div id="alertContainer"></div>
+
+            <!-- Login Form -->
+            <form id="loginForm">
+                <!-- Email Field -->
                 <div class="form-group">
-                    <label><i class="fas fa-envelope"></i> Email</label>
-                    <input type="email" id="email" placeholder="nama@guru.com" required>
+                    <label>
+                        <i class="fas fa-envelope"></i>
+                        Alamat Email
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            placeholder="nama@guru.com"
+                            required
+                        >
+                        <span id="emailIndicator" class="email-valid-indicator"></span>
+                    </div>
                 </div>
+
+                <!-- Password Field -->
                 <div class="form-group">
-                    <label><i class="fas fa-lock"></i> Kata Laluan</label>
-                    <input type="password" id="password" placeholder="••••••••" required>
+                    <label>
+                        <i class="fas fa-lock"></i>
+                        Kata Laluan
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            placeholder="••••••••"
+                            required
+                        >
+                        <span class="toggle-password" onclick="togglePassword()">
+                            <i class="fas fa-eye" id="toggleIcon"></i>
+                        </span>
+                    </div>
                 </div>
-                
+
+                <!-- Form Options -->
                 <div class="form-options">
                     <label class="checkbox">
-                        <input type="checkbox"> Ingat saya
+                        <input type="checkbox" id="rememberMe">
+                        <span>Ingat saya</span>
                     </label>
-                    <a href="#">Lupa kata laluan?</a>
+                    <button type="button" class="forgot-link" onclick="handleForgotPassword()">
+                        Lupa kata laluan?
+                    </button>
                 </div>
-                
-                <button type="submit" class="btn btn-primary btn-block">
-                    <i class="fas fa-sign-in-alt"></i> Login
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Log Masuk
                 </button>
             </form>
-            
+
+            <!-- Footer -->
             <div class="auth-footer">
-                <p>Takda akaun? <a href="signup-guru.html">Daftar sekarang</a></p>
-                <p><a href="index.html"><i class="fas fa-arrow-left"></i> Kembali ke utama</a></p>
-            </div>
-            
-            <div class="auth-note">
-                <small><i class="fas fa-info-circle"></i> Guna email & password yang didaftar. Data simpan dalam akaun Google awda.</small>
+                <p>Belum mempunyai akaun?</p>
+                <a href="signup-guru.html">
+                    <i class="fas fa-user-plus"></i>
+                    Daftar sebagai Guru Baru
+                </a>
             </div>
         </div>
     </div>
-    
-    <script src="js/app.js"></script>
-    <script src="js/auth.js"></script>
+
+    <script>
+        // ===== DATABASE FUNCTIONS =====
+        function getGuruDatabase() {
+            return JSON.parse(localStorage.getItem('semsira_gurus')) || [];
+        }
+
+        // ===== PASSWORD TOGGLE =====
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.className = 'fas fa-eye';
+            }
+        }
+
+        // ===== VALIDATE EMAIL FORMAT =====
+        function validateEmailFormat(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // ===== CHECK DOMAIN EXISTS (guna API) =====
+        async function checkDomainExists(domain) {
+            // Domain yang pasti wujud
+            const validDomains = [
+                'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com',
+                'semsira.edu.my', 'edu.my', 'google.com', 'semsira.com',
+                'guru.com', 'school.edu', 'edu.my', 'moe.edu.my'
+            ];
+            
+            return validDomains.includes(domain.toLowerCase());
+        }
+
+        // ===== VALIDATE EMAIL REAL-TIME =====
+        async function validateEmail(email) {
+            const indicator = document.getElementById('emailIndicator');
+            
+            if (!email) {
+                indicator.innerHTML = '';
+                return false;
+            }
+
+            // Check format
+            if (!validateEmailFormat(email)) {
+                indicator.innerHTML = '<i class="fas fa-times-circle invalid-email"></i>';
+                return false;
+            }
+
+            // Check domain
+            try {
+                indicator.innerHTML = '<div class="spinner" style="width: 15px; height: 15px;"></div>';
+                
+                const domain = email.split('@')[1];
+                const isValid = await checkDomainExists(domain);
+                
+                if (isValid) {
+                    indicator.innerHTML = '<i class="fas fa-check-circle valid-email"></i>';
+                    return true;
+                } else {
+                    indicator.innerHTML = '<i class="fas fa-exclamation-circle invalid-email"></i>';
+                    return false;
+                }
+            } catch (error) {
+                indicator.innerHTML = '<i class="fas fa-check-circle valid-email"></i>';
+                return true;
+            }
+        }
+
+        // ===== SHOW ALERT =====
+        function showAlert(message, type = 'danger') {
+            const alertContainer = document.getElementById('alertContainer');
+            const icons = {
+                success: 'fa-check-circle',
+                danger: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type}">
+                    <i class="fas ${icons[type]}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
+
+        // ===== HANDLE LOGIN =====
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const loginBtn = document.getElementById('loginBtn');
+            
+            // Disable button
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<div class="spinner"></div> Memproses...';
+            
+            try {
+                // Validate email
+                const isValidEmail = await validateEmail(email);
+                if (!isValidEmail) {
+                    showAlert('Alamat email tidak sah', 'danger');
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Log Masuk';
+                    return;
+                }
+                
+                // Check in database
+                const gurus = getGuruDatabase();
+                const guru = gurus.find(g => g.email === email);
+                
+                if (!guru) {
+                    showAlert('Email tidak berdaftar. Sila daftar akaun baru.', 'warning');
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Log Masuk';
+                    return;
+                }
+                
+                if (guru.password !== password) {
+                    showAlert('Kata laluan salah. Sila cuba lagi.', 'danger');
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Log Masuk';
+                    return;
+                }
+                
+                // Login successful
+                showAlert('Log masuk berjaya!', 'success');
+                
+                // Save session
+                const userData = {
+                    id: guru.id,
+                    name: guru.name,
+                    email: guru.email,
+                    role: 'guru'
+                };
+                
+                if (rememberMe) {
+                    localStorage.setItem('semsira_current_user', JSON.stringify(userData));
+                } else {
+                    sessionStorage.setItem('semsira_current_user', JSON.stringify(userData));
+                }
+                
+                // Redirect to dashboard
+                setTimeout(() => {
+                    window.location.href = 'dashboard-guru.html';
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('Ralat sistem. Sila cuba lagi.', 'danger');
+                
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Log Masuk';
+            }
+        });
+
+        // ===== FORGOT PASSWORD =====
+        function handleForgotPassword() {
+            const email = document.getElementById('email').value;
+            
+            if (!email) {
+                showAlert('Sila masukkan email anda', 'warning');
+                document.getElementById('email').focus();
+                return;
+            }
+            
+            if (!validateEmailFormat(email)) {
+                showAlert('Format email tidak sah', 'danger');
+                return;
+            }
+            
+            const gurus = getGuruDatabase();
+            const guru = gurus.find(g => g.email === email);
+            
+            if (guru) {
+                showAlert('Sila hubungi host untuk reset kata laluan: hostsemsira@gmail.com', 'info');
+            } else {
+                showAlert('Email tidak berdaftar dalam sistem', 'danger');
+            }
+        }
+
+        // ===== CHECK SESSION =====
+        function checkExistingSession() {
+            const currentUser = localStorage.getItem('semsira_current_user') || sessionStorage.getItem('semsira_current_user');
+            
+            if (currentUser) {
+                const user = JSON.parse(currentUser);
+                if (user.role === 'guru') {
+                    window.location.href = 'dashboard-guru.html';
+                }
+            }
+        }
+
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', function() {
+            checkExistingSession();
+            
+            // Email validation on input
+            document.getElementById('email').addEventListener('input', function() {
+                validateEmail(this.value);
+            });
+        });
+    </script>
 </body>
 </html>

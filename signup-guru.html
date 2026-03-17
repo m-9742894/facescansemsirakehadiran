@@ -567,10 +567,81 @@
         </div>
     </div>
 
-    <!-- Database JavaScript File -->
-    <script src="js/database.js"></script>
-    
+    <!-- Database JavaScript - Sendiri Dalam HTML -->
     <script>
+        // ===== DATABASE SIGNUP GURU - SEMSIRA =====
+        // Database khusus untuk halaman ini, tapi data dikongsi dengan login
+        
+        // ===== CONSTANTS =====
+        const STORAGE_KEYS = {
+            GURU: 'semsira_gurus',           // Kunci untuk data guru (sama dengan login)
+            CURRENT_USER: 'semsira_current_user'
+        };
+
+        // ===== INITIALIZE DATABASE =====
+        function initializeSignupDatabase() {
+            console.log('Initializing Signup Database...');
+            
+            // Cek jika database guru belum wujud, buat database KOSONG
+            if (!localStorage.getItem(STORAGE_KEYS.GURU)) {
+                // Database kosong sepenuhnya - TIADA DATA DEFAULT
+                const emptyGurus = [];
+                localStorage.setItem(STORAGE_KEYS.GURU, JSON.stringify(emptyGurus));
+                console.log('Database guru baru telah dicipta (kosong)');
+            } else {
+                console.log('Database guru sedia ada, jumlah guru:', getTotalGuru());
+            }
+        }
+
+        // ===== GURU FUNCTIONS =====
+        function getGuruDatabase() {
+            const data = localStorage.getItem(STORAGE_KEYS.GURU);
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveGuruDatabase(gurus) {
+            localStorage.setItem(STORAGE_KEYS.GURU, JSON.stringify(gurus));
+            console.log('Database guru disimpan. Jumlah sekarang:', gurus.length);
+        }
+
+        function getTotalGuru() {
+            return getGuruDatabase().length;
+        }
+
+        function getGuruByEmail(email) {
+            const gurus = getGuruDatabase();
+            return gurus.find(guru => guru.email.toLowerCase() === email.toLowerCase());
+        }
+
+        function isEmailExists(email) {
+            const guru = getGuruByEmail(email);
+            return guru !== undefined;
+        }
+
+        // ===== ADD NEW GURU =====
+        function addNewGuru(guruData) {
+            const gurus = getGuruDatabase();
+            
+            // Buat ID unik (guna timestamp)
+            const newGuru = {
+                id: Date.now(),
+                name: guruData.name,
+                email: guruData.email,
+                phone: guruData.phone || '',
+                password: guruData.password,
+                registerDate: new Date().toISOString().split('T')[0],
+                registerTime: new Date().toLocaleTimeString('ms-MY'),
+                status: 'active',
+                lastLogin: null
+            };
+            
+            gurus.push(newGuru);
+            saveGuruDatabase(gurus);
+            
+            console.log('Guru baru ditambah:', newGuru.name);
+            return newGuru;
+        }
+
         // ===== PASSWORD TOGGLE =====
         function togglePassword(inputId, iconId) {
             const passwordInput = document.getElementById(inputId);
@@ -602,7 +673,10 @@
                 'edu.my',
                 'moe.edu.my',
                 'guru.edu.my',
-                'smkss.edu.my'
+                'smkss.edu.my',
+                'semsira.edu.my',
+                'teacher.com',
+                'school.my'
             ];
             
             return validDomains.includes(domain.toLowerCase());
@@ -614,12 +688,12 @@
             
             if (!email) {
                 indicator.innerHTML = '';
-                return false;
+                return { valid: false, reason: 'empty' };
             }
 
             if (!validateEmailFormat(email)) {
                 indicator.innerHTML = '<i class="fas fa-times-circle invalid-email"></i>';
-                return false;
+                return { valid: false, reason: 'format' };
             }
 
             try {
@@ -630,14 +704,14 @@
                 
                 if (isValid) {
                     indicator.innerHTML = '<i class="fas fa-check-circle valid-email"></i>';
-                    return true;
+                    return { valid: true };
                 } else {
                     indicator.innerHTML = '<i class="fas fa-exclamation-circle invalid-email"></i>';
-                    return false;
+                    return { valid: false, reason: 'domain' };
                 }
             } catch (error) {
                 indicator.innerHTML = '<i class="fas fa-check-circle valid-email"></i>';
-                return true;
+                return { valid: true };
             }
         }
 
@@ -657,30 +731,30 @@
             if (/[0-9]/.test(password)) strength += 20;
             if (/[^A-Za-z0-9]/.test(password)) strength += 20;
             
-            return strength;
+            let level = 'Lemah';
+            let color = 'var(--danger)';
+            
+            if (strength >= 70) {
+                level = 'Kuat';
+                color = 'var(--success)';
+            } else if (strength >= 40) {
+                level = 'Sederhana';
+                color = 'var(--warning)';
+            }
+            
+            return { strength, level, color };
         }
 
         function updatePasswordStrength() {
             const password = document.getElementById('password').value;
-            const strength = checkPasswordStrength(password);
+            const { strength, level, color } = checkPasswordStrength(password);
             const fill = document.getElementById('strengthFill');
             const text = document.getElementById('strengthText');
             
             fill.style.width = strength + '%';
-            
-            if (strength < 40) {
-                fill.style.background = 'var(--danger)';
-                text.textContent = 'Lemah';
-                text.style.color = 'var(--danger)';
-            } else if (strength < 70) {
-                fill.style.background = 'var(--warning)';
-                text.textContent = 'Sederhana';
-                text.style.color = 'var(--warning)';
-            } else {
-                fill.style.background = 'var(--success)';
-                text.textContent = 'Kuat';
-                text.style.color = 'var(--success)';
-            }
+            fill.style.background = color;
+            text.textContent = level;
+            text.style.color = color;
         }
 
         // ===== SHOW ALERT =====
@@ -723,10 +797,16 @@
             signupBtn.innerHTML = '<div class="spinner"></div> Memproses...';
             
             try {
-                // Validate email format
-                const isValidEmail = await validateEmail(email);
-                if (!isValidEmail) {
-                    showAlert('Alamat email tidak sah', 'danger');
+                // Validate email
+                const emailCheck = await validateEmail(email);
+                if (!emailCheck.valid) {
+                    if (emailCheck.reason === 'format') {
+                        showAlert('Format email tidak sah', 'danger');
+                    } else if (emailCheck.reason === 'domain') {
+                        showAlert('Domain email tidak wujud', 'danger');
+                    } else {
+                        showAlert('Alamat email tidak sah', 'danger');
+                    }
                     signupBtn.disabled = false;
                     signupBtn.innerHTML = '<i class="fas fa-user-check"></i> Daftar Akaun';
                     return;
@@ -748,7 +828,7 @@
                     return;
                 }
                 
-                // Check password strength
+                // Check password length
                 if (password.length < 6) {
                     showAlert('Kata laluan mesti sekurang-kurangnya 6 aksara', 'danger');
                     signupBtn.disabled = false;
@@ -764,25 +844,24 @@
                     return;
                 }
                 
-                // Create new guru
-                const gurus = getGuruDatabase();
-                const newGuru = {
-                    id: Date.now(),
+                // Add new guru
+                addNewGuru({
                     name: fullname,
                     email: email,
                     phone: phone,
-                    password: password,
-                    registerDate: new Date().toISOString().split('T')[0],
-                    status: 'active'
-                };
-                
-                gurus.push(newGuru);
-                saveGuruDatabase(gurus);
+                    password: password
+                });
                 
                 showAlert('Pendaftaran berjaya! Sila log masuk.', 'success');
                 
                 // Clear form
                 document.getElementById('signupForm').reset();
+                document.getElementById('passwordStrength').innerHTML = `
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill" style="width:0%"></div>
+                    </div>
+                    <div class="strength-text" id="strengthText"></div>
+                `;
                 
                 // Redirect to login after 2 seconds
                 setTimeout(() => {
@@ -820,7 +899,7 @@
 
         // ===== CHECK SESSION =====
         function checkExistingSession() {
-            const currentUser = localStorage.getItem('semsira_current_user') || sessionStorage.getItem('semsira_current_user');
+            const currentUser = localStorage.getItem(STORAGE_KEYS.CURRENT_USER) || sessionStorage.getItem(STORAGE_KEYS.CURRENT_USER);
             
             if (currentUser) {
                 const user = JSON.parse(currentUser);
@@ -832,7 +911,38 @@
 
         // ===== INIT =====
         document.addEventListener('DOMContentLoaded', function() {
+            initializeSignupDatabase();
             checkExistingSession();
+        });
+
+        // Untuk debugging (boleh panggil dari console)
+        window.semsira = {
+            guru: {
+                viewAll: function() {
+                    const gurus = getGuruDatabase();
+                    console.log('=== SENARAI GURU TERDAFTAR ===');
+                    console.log('Jumlah:', gurus.length);
+                    if (gurus.length === 0) {
+                        console.log('Tiada guru dalam database');
+                    } else {
+                        gurus.forEach((guru, index) => {
+                            console.log(`${index + 1}. ${guru.name} | ${guru.email} | Daftar: ${guru.registerDate}`);
+                        });
+                    }
+                    return gurus;
+                },
+                deleteAll: function() {
+                    if (confirm('Buang semua data guru?')) {
+                        localStorage.setItem(STORAGE_KEYS.GURU, JSON.stringify([]));
+                        console.log('⚠️ SEMUA data guru telah dipadamkan');
+                        alert('Semua data guru telah dipadam');
+                        location.reload();
+                    }
+                },
+                total: function() {
+                    return getTotalGuru();
+                }
+            }
         });
     </script>
 </body>
